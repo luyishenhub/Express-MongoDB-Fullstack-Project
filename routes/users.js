@@ -1,8 +1,10 @@
 var express = require('express');
 var bodyParser = require('body-parser');
 var router = express.Router();
-var User = require('../models/user');
 var passport = require('passport');
+
+var User = require('../models/user');
+var authenticate = require('../authenticate');
 
 router.use(bodyParser.json());
 
@@ -45,13 +47,16 @@ router.post('/signup', (req, res, next) => {
   })
 })
 
-//post: store account info in session(either it is logged in or not)
+//post: store account info in session/token(either it is logged in or not)
 //passport.authenticate('local') will automatically add user property to the request message
-router.post('/login', passport.authenticate('local'), (req, res, next) => {
+//passport.authenticat('local') decides either it is using session or token
+router.post('/login', passport.authenticate('local'), (req, res) => {
+  //verify by local strategy, if success -> assign token to user
+  var token = authenticate.getToken({_id: req.user._id});
   res.statusCode = 200;
   res.setHeader('Content-Type', 'application/json');
-  res.json({success: true, status: 'You are successfully logged in!'});
-})
+  res.json({success: true, token: token, status: 'You are successfully logged in!'});
+});
 
 router.get('/logout', (req, res, next) => { //get because server can track your info from the session id from the session cookie
   if (req.session){
