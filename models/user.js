@@ -1,22 +1,18 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
+var passportLocalMongoose = require('passport-local-mongoose'); 
+//so no need of manually setting username and password in schema anymore
+
 //a document structre
 var userSchema = new Schema({
-    username:  {
-        type: String,
-        required: true,
-        unique: true
-    },
-    password:  {
-        type: String,
-        required: true
-    },
     admin:  {
         type: Boolean,
         default: false
     }
 });
+
+userSchema.plugin(passportLocalMongoose);
 
 
 var User = mongoose.model('User', userSchema); //collection name = 'Dish'

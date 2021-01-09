@@ -6,6 +6,9 @@ var logger = require('morgan');
 var session = require('express-session');
 var FileStore = require('session-file-store')(session);
 
+var passport = require('passport');
+var authenticate = require('./authenticate');
+
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var dishRouter = require('./routes/dishRouter');
@@ -41,29 +44,24 @@ app.use(session({
   store: new FileStore()
 }))
 
+app.use(passport.initialize());
+app.use(passport.session()); //automatically serialize that user information and then store it in the session (req.user)
+
 //log in first then check for authentication to access other endpoints
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
 function auth(req, res, next){
-  console.log(req.session);
+  console.log(req.user);
   //if there is no session cookie, then error directly, no reprompt.
   //The only way to be authenticated is through log in
-  if (!req.session.user) {
+  if (!req.user) { //if req.user is present, authentication is done
       var err = new Error('You are not authenticated!');
-      err.status = 401;
+      err.status = 403;
       return next(err);
   }
   else {
-    if (req.session.user === 'authenticated') {
-      console.log('req.session: ',req.session);
-      next();
-    }
-    else {
-      var err = new Error('You are not authenticated!');
-      err.status = 403; //forbidden error code
-      return next(err);
-    }
+    next();
   }
 }
 
