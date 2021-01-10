@@ -44,5 +44,5 @@ exports.verifyUser = passport.authenticate('jwt', {session: false}); // not crea
 
 /* Header:
 Authorization:
-bear <jwt token string>
+bearer <jwt token string>
 */
