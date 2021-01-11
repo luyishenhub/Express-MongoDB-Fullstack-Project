@@ -77,6 +77,7 @@ router.post('/signup', cors.corsWithOptions, (req, res, next) => {
 })
 
 //post: store account info in session/token(either it is logged in or not)
+//passport.authenticate('local') uses local strategy to check if the user authentication is valid
 //passport.authenticate('local') will automatically add user property to the request message
 //passport.authenticat('local') decides either it is using session or token
 router.post('/login', cors.corsWithOptions, passport.authenticate('local'), (req, res) => {
@@ -99,5 +100,15 @@ router.get('/logout', (req, res, next) => { //get because server can track your 
     return next(err);
   }
 })
+
+router.get('/facebook/token', passport.authenticate('facebook-token'), (req, res) => {
+  if (req.user) { //if successfully authenticated, then will load value to req.user
+    //then after we can just use this express-server created token to log in as long as it is not expired
+    var token = authenticate.getToken({_id: req.user._id});
+    res.statusCode = 200;
+    res.setHeader('Content-Type', 'application/json');
+    res.json({success: true, token: token, status: 'You are successfully logged in!'});
+  }
+});
 
 module.exports = router;

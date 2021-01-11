@@ -11,7 +11,7 @@ const dishRouter = express.Router();
 dishRouter.use(bodyParser.json());
 
 dishRouter.route('/')
-//whenever preflight requests, the client first send the HTTP OPTIONS request message
+//only hits when doing preflight requests by sending a HTTP OPTION, the client first send the HTTP OPTIONS request message
 //then obtain the reply from the server side before it actually sends the actual request.
 //statuscode 200 gives approve for the option
 .options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
@@ -28,7 +28,7 @@ dishRouter.route('/')
     }, (err) => next(err))
     .catch((err) => next(err));
 })
-//corsWithOptions, gives approve for the actual action request after the option approve
+//corsWithOptions, gives approve for the actual action request after the option approve if exists
 .post(cors.corsWithOptions, authenticate.verifyUser, (req, res, next) => {
     Dishes.create(req.body)
     .then((dish) => {
