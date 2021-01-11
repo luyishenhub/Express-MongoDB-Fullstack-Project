@@ -42,6 +42,18 @@ exports.jwtPassport = passport.use(new JwtStrategy(opts,
 //we can verify the authorization header by calling verifyUser
 exports.verifyUser = passport.authenticate('jwt', {session: false}); // not creating sessions this case, using tokens instead
 
+exports.verifyAdmin = (req, res, next) => {
+    if (req.user.admin){
+        next();
+    }
+    else{
+        console.log("NANCYYYYY\n"+req.user);
+        var err = new Error('Only admin can do it');
+        err.status = 403;
+        return next(err);
+    }
+};
+
 /* Header:
 Authorization:
 bearer <jwt token string>
