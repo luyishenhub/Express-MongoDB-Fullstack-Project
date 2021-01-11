@@ -5,11 +5,25 @@ var passport = require('passport');
 
 var User = require('../models/user');
 var authenticate = require('../authenticate');
+const cors = require('./cors');
 
 router.use(bodyParser.json());
 
 /* GET users listing. */
-router.get('/', function(req, res, next) {
+//corsWithOptions because only admin can access this
+router.get('/', cors.corsWithOptions, authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
+  User.find({})
+  .then((user) => {
+    res.statusCode = 200;
+    res.setHeader('Content-Type', 'application/json');
+    res.json(user);
+  })
+  .catch((err) => {
+    res.statusCode = 500;
+    res.setHeader('Content-Type', 'application/json');
+    res.json({err:err});
+  })
+
   User.find({}, function(err, users) {
     var userMap = {};
 
@@ -24,7 +38,7 @@ router.get('/', function(req, res, next) {
 });
 
 //signup: store account info in database (either the account is created or not)
-router.post('/signup', (req, res, next) => {
+router.post('/signup', cors.corsWithOptions, (req, res, next) => {
   console.log(req.body.username);
   User.register(new User({username: req.body.username}), 
     req.body.password, (err, user) => {
@@ -65,7 +79,7 @@ router.post('/signup', (req, res, next) => {
 //post: store account info in session/token(either it is logged in or not)
 //passport.authenticate('local') will automatically add user property to the request message
 //passport.authenticat('local') decides either it is using session or token
-router.post('/login', passport.authenticate('local'), (req, res) => {
+router.post('/login', cors.corsWithOptions, passport.authenticate('local'), (req, res) => {
   //verify by local strategy, if success -> assign token to user
   var token = authenticate.getToken({_id: req.user._id});
   res.statusCode = 200;
