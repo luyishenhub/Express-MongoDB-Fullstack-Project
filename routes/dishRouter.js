@@ -16,7 +16,6 @@ dishRouter.route('/')
 //statuscode 200 gives approve for the option
 .options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
 .get(cors.cors, cors.cors, (req,res,next) => {
-    console.log('NANCYYYY')
     Dishes.find({})
     //in db, it stores with the id number
     //so once send back to client, substitute the id to user document info

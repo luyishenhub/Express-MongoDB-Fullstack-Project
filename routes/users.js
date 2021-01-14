@@ -13,26 +13,16 @@ router.use(bodyParser.json());
 //corsWithOptions because only admin can access this
 router.get('/', cors.corsWithOptions, authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
   User.find({})
-  .then((user) => {
+  .then((users) => {
     res.statusCode = 200;
     res.setHeader('Content-Type', 'application/json');
-    res.json(user);
+    res.json(users);
   })
   .catch((err) => {
     res.statusCode = 500;
     res.setHeader('Content-Type', 'application/json');
     res.json({err:err});
   })
-
-  User.find({}, function(err, users) {
-    var userMap = {};
-
-    users.forEach(function(user) {
-      userMap[user._id] = user;
-    });
-
-    res.send(userMap);  
-  });
   // DateTime.remove({}, callback)
   // res.send('<html><title>Express MongoDB Fullstack Project</title><body><h1>Users Page</h1></body></html>');
 });

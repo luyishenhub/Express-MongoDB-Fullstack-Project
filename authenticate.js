@@ -53,7 +53,6 @@ exports.verifyAdmin = (req, res, next) => {
         next();
     }
     else{
-        console.log("NANCYYYYY\n"+req.user);
         var err = new Error('Only admin can do it');
         err.status = 403;
         return next(err);
