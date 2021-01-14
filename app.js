@@ -21,11 +21,12 @@ const Dishes = require('./models/dishes');
 
 //connect mongodb database
 const url = config.mongoUrl;
+
 const connect = mongoose.connect(url);
 
 connect.then((db) => {
     console.log("Connected correctly to server");
-}, (err) => { console.log(err); });
+}, (err) => { console.log("NANCYYY",err); });
 
 var app = express();
 
